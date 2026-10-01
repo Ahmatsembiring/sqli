@@ -8,9 +8,18 @@ Lingkungan laboratorium **lokal** untuk penelitian Tugas Akhir:
 > Jalankan hanya di `localhost` atau jaringan lab yang terisolasi. Jangan pernah di-deploy ke internet.
 > `run.py` menolak bind ke alamat selain loopback.
 
-## Status: Phase 1 — Project Foundation
+## Status: Phase 2 — Normal Application
 
-Fitur yang sudah ada: login, logout, role `ADMIN`/`USER`, dashboard per role, tabel `users`.
+Fitur yang sudah ada:
+
+- **Phase 1:** login, logout, role `ADMIN`/`USER`, dashboard per role.
+- **Phase 2 (USER):** profil (ubah email, ganti password), daftar & cari user (tanpa email user lain),
+  daftar/cari/filter produk (kategori, rentang harga, stok, urutan, pagination), detail produk,
+  beli produk, riwayat & pembatalan transaksi milik sendiri.
+- **Phase 2 (ADMIN):** daftar & cari user, CRUD produk.
+
+Tabel: `users`, `products`, `transactions`. Semua akses database lewat SQLAlchemy (parameterized),
+sehingga dapat diamati oleh Activity Logger pada fase berikutnya.
 
 ## Teknologi
 
@@ -30,15 +39,17 @@ Fitur yang sudah ada: login, logout, role `ADMIN`/`USER`, dashboard per role, ta
 app/
   __init__.py          app factory, registrasi extension & blueprint
   config.py            konfigurasi dari environment variable (.env)
-  models/user.py       model User + enum Role
+  models/              User (+ enum Role), Product, Transaction
+  services/catalog.py  pencarian/filter produk & user
+  services/shop.py     beli & batalkan transaksi (dengan penguncian stok)
   routes/auth.py       /login, /logout, /dashboard (redirect sesuai role)
-  routes/admin.py      /admin/dashboard (ADMIN saja)
-  routes/user.py       /user/dashboard  (USER saja)
+  routes/admin.py      /admin/* (ADMIN saja): dashboard, users, products CRUD
+  routes/user.py       /user/*  (USER saja): dashboard, profile, users, products, transactions
   routes/decorators.py role_required()
-  templates/           base, auth/login, admin/dashboard, user/dashboard
+  templates/           base, _macros, auth/, admin/, user/
   static/              css/style.css, js/app.js
-scripts/init_db.py     buat tabel + seed akun
-tests/                 pytest Phase 1
+scripts/init_db.py     buat tabel + seed akun & katalog produk contoh
+tests/                 pytest per phase
 run.py                 entry point (hanya localhost)
 ```
 
