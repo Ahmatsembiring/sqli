@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Log #{{ log.id }} · Admin · SQLi Research Lab{% endblock %}
+{% block content %}
+<h1>Activity Log #{{ log.id }}</h1>
+<section class="card">
+  <dl class="kv">
+    <dt>Timestamp</dt><dd>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3] }}</dd>
+    <dt>User</dt><dd>{{ log.user.username ~ ' (id ' ~ log.user_id ~ ')' if log.user else '-' }}</dd>
+    <dt>Session ID</dt><dd><code>{{ log.session_id or '-' }}</code></dd>
+    <dt>Endpoint</dt><dd><code>{{ log.endpoint }}</code></dd>
+    <dt>HTTP method</dt><dd>{{ log.http_method }}</dd>
+    <dt>Operasi</dt><dd>{{ log.operation.value }}</dd>
+    <dt>Status</dt><dd><span class="tag tag-{{ log.status.value|lower }}">{{ log.status.value }}</span></dd>
+    {% if log.error_message %}<dt>Error</dt><dd><code>{{ log.error_message }}</code></dd>{% endif %}
+    <dt>Label</dt><dd>{{ log.label.value if log.label else 'Belum dilabeli' }}</dd>
+    <dt>Response time</dt><dd>{{ '%.3f'|format(log.response_time) }} ms <span class="muted">(durasi eksekusi query)</span></dd>
+  </dl>
+</section>
+
+<section class="card">
+  <h2>Input data</h2>
+  <pre class="code-block">{{ log.input_data or '-' }}</pre>
+  <h2>Query</h2>
+  <pre class="code-block">{{ log.query }}</pre>
+</section>
+<a href="{{ url_for('admin.activity_logs_list') }}">&laquo; Kembali ke activity logs</a>
+{% endblock %}

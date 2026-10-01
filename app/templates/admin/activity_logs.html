@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% from "_macros.html" import pagination_nav %}
+{% block title %}Activity Logs · Admin · SQLi Research Lab{% endblock %}
+{% block content %}
+<h1>Activity Logs</h1>
+
+<form method="get" action="{{ url_for('admin.activity_logs_list') }}" class="filter-bar">
+  <select name="user_id">
+    <option value="">Semua user</option>
+    {% for u in options.users %}
+      <option value="{{ u.id }}" {% if u.id == filters.user_id %}selected{% endif %}>{{ u.username }}</option>
+    {% endfor %}
+  </select>
+  <select name="endpoint">
+    <option value="">Semua endpoint</option>
+    {% for e in options.endpoints %}
+      <option value="{{ e }}" {% if e == filters.endpoint %}selected{% endif %}>{{ e }}</option>
+    {% endfor %}
+  </select>
+  <select name="operation">
+    <option value="">Semua operasi</option>
+    {% for op in options.operations %}
+      <option value="{{ op }}" {% if op == filters.operation %}selected{% endif %}>{{ op }}</option>
+    {% endfor %}
+  </select>
+  <label class="inline">Dari <input type="date" name="date_from"
+    value="{{ filters.date_from.strftime('%Y-%m-%d') if filters.date_from else '' }}"></label>
+  <label class="inline">Sampai <input type="date" name="date_to"
+    value="{{ filters.date_to.strftime('%Y-%m-%d') if filters.date_to else '' }}"></label>
+  <button type="submit" class="btn btn-inline">Filter</button>
+  <a href="{{ url_for('admin.activity_logs_list') }}" class="muted">Reset</a>
+</form>
+
+<section class="card">
+  <p class="muted">{{ pagination.total }} log ditemukan.</p>
+  <table class="table table-logs">
+    <thead>
+      <tr><th>ID</th><th>Waktu</th><th>User</th><th>Method</th><th>Endpoint</th>
+          <th>Operasi</th><th>Status</th><th>Label</th><th class="num">ms</th><th>Query</th></tr>
+    </thead>
+    <tbody>
+      {% for log in pagination.items %}
+        <tr>
+          <td><a href="{{ url_for('admin.activity_log_detail', log_id=log.id) }}">{{ log.id }}</a></td>
+          <td class="nowrap">{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+          <td>{{ log.user.username if log.user else '-' }}</td>
+          <td>{{ log.http_method }}</td>
+          <td><code>{{ log.endpoint }}</code></td>
+          <td>{{ log.operation.value }}</td>
+          <td><span class="tag tag-{{ log.status.value|lower }}">{{ log.status.value }}</span></td>
+          <td>{{ log.label.value if log.label else '—' }}</td>
+          <td class="num">{{ '%.2f'|format(log.response_time) }}</td>
+          <td><code class="truncate" title="{{ log.query }}">{{ log.query }}</code></td>
+        </tr>
+      {% else %}
+        <tr><td colspan="10" class="muted">Belum ada log yang cocok.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {{ pagination_nav(pagination, 'admin.activity_logs_list') }}
+</section>
+{% endblock %}

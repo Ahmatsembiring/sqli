@@ -8,7 +8,7 @@ Lingkungan laboratorium **lokal** untuk penelitian Tugas Akhir:
 > Jalankan hanya di `localhost` atau jaringan lab yang terisolasi. Jangan pernah di-deploy ke internet.
 > `run.py` menolak bind ke alamat selain loopback.
 
-## Status: Phase 2 — Normal Application
+## Status: Phase 3 — Activity Logger
 
 Fitur yang sudah ada:
 
@@ -18,8 +18,47 @@ Fitur yang sudah ada:
   beli produk, riwayat & pembatalan transaksi milik sendiri.
 - **Phase 2 (ADMIN):** daftar & cari user, CRUD produk.
 
-Tabel: `users`, `products`, `transactions`. Semua akses database lewat SQLAlchemy (parameterized),
-sehingga dapat diamati oleh Activity Logger pada fase berikutnya.
+- **Phase 3:** activity logger untuk setiap query SQL selama HTTP request + halaman admin
+  `/admin/activity-logs` (pagination, filter user/endpoint/operasi/tanggal, detail).
+
+Tabel: `users`, `products`, `transactions`, `activity_logs`.
+
+## Activity logging
+
+Setiap query SQL yang dieksekusi aplikasi selama satu HTTP request menjadi satu baris `activity_logs`.
+
+| Kolom | Isi |
+|---|---|
+| `timestamp` | waktu query selesai dieksekusi (presisi milidetik) |
+| `user_id` | user yang login saat request (NULL jika anonim / login gagal) |
+| `session_id` | ID acak per browser session (bukan cookie session, tidak memberi akses apa pun) |
+| `endpoint` | pola route Flask, mis. `/user/products/<int:product_id>` |
+| `http_method` | GET / POST |
+| `input_data` | JSON berisi path params, query string, dan field form (field sensitif di-redact) |
+| `query` | query SQL final yang dikirim ke MariaDB, dirender dengan `cursor.mogrify()` |
+| `operation` | SELECT / INSERT / UPDATE / DELETE / OTHER (kata kunci pertama query) |
+| `status` | SUCCESS / ERROR (+ `error_message`) |
+| `label` | BENIGN / SQL_INJECTION / NULL — selalu NULL pada Phase 3; ground truth ditetapkan di tahap dataset |
+| `response_time` | durasi eksekusi query di driver DB dalam ms (**bukan** durasi HTTP request) |
+
+Cara kerja (`app/services/activity_logger.py`): event SQLAlchemy `before_cursor_execute`,
+`after_cursor_execute`, dan `handle_error` menangkap query di level driver. Entri dikumpulkan
+selama request lalu ditulis sekali di akhir request lewat koneksi terpisah.
+
+Yang **tidak** direkam / disensor:
+
+- field form yang namanya mengandung `password`, `secret`, `token` → `[REDACTED]`; `csrf_token` dibuang;
+- nilai parameter SQL berbentuk hash password (`scrypt:` / `pbkdf2:`) → `[REDACTED]`;
+- query pemuatan user dari session login (Flask-Login `user_loader`) — infrastruktur, bukan aktivitas user;
+- request ke `/static/` dan ke halaman `/admin/activity-logs` (agar membaca log tidak menghasilkan log);
+- query di luar HTTP request (`init_db.py`, CLI).
+
+Keterbatasan yang perlu dicatat dalam penelitian:
+
+- Logging dilakukan di **level aplikasi** (driver PyMySQL), bukan general query log MariaDB. Query yang
+  dijalankan langsung ke database di luar aplikasi tidak terekam.
+- Query yang dihasilkan ORM ikut terekam apa adanya, termasuk lazy-load (mis. halaman transaksi memuat
+  produk per baris transaksi). Ini perilaku aplikasi sebenarnya, tetapi menghasilkan banyak query mirip.
 
 ## Teknologi
 
@@ -39,11 +78,13 @@ sehingga dapat diamati oleh Activity Logger pada fase berikutnya.
 app/
   __init__.py          app factory, registrasi extension & blueprint
   config.py            konfigurasi dari environment variable (.env)
-  models/              User (+ enum Role), Product, Transaction
+  models/              User (+ enum Role), Product, Transaction, ActivityLog
   services/catalog.py  pencarian/filter produk & user
   services/shop.py     beli & batalkan transaksi (dengan penguncian stok)
+  services/activity_logger.py  perekam query SQL per request
+  services/activity_logs.py    filter & pagination log untuk admin
   routes/auth.py       /login, /logout, /dashboard (redirect sesuai role)
-  routes/admin.py      /admin/* (ADMIN saja): dashboard, users, products CRUD
+  routes/admin.py      /admin/* (ADMIN saja): dashboard, users, products CRUD, activity-logs
   routes/user.py       /user/*  (USER saja): dashboard, profile, users, products, transactions
   routes/decorators.py role_required()
   templates/           base, _macros, auth/, admin/, user/

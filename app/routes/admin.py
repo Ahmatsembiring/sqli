@@ -3,9 +3,9 @@ from decimal import Decimal, InvalidOperation
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from app import db
-from app.models import Product, Role, Transaction
+from app.models import ActivityLog, Product, Role, Transaction
 from app.routes.decorators import role_required
-from app.services import catalog
+from app.services import activity_logs, catalog
 
 bp = Blueprint("admin", __name__)
 
@@ -24,6 +24,28 @@ def users():
     q = request.args.get("q", "").strip()
     page = request.args.get("page", 1, type=int)
     return render_template("admin/users.html", q=q, pagination=catalog.search_users(q, page))
+
+
+# ---------- Activity logs ----------
+
+@bp.route("/activity-logs")
+@role_required(Role.ADMIN)
+def activity_logs_list():
+    filters = activity_logs.parse_log_filters(request.args)
+    page = request.args.get("page", 1, type=int)
+    return render_template(
+        "admin/activity_logs.html",
+        filters=filters,
+        options=activity_logs.filter_options(),
+        pagination=activity_logs.search_logs(filters, page),
+    )
+
+
+@bp.route("/activity-logs/<int:log_id>")
+@role_required(Role.ADMIN)
+def activity_log_detail(log_id):
+    log = db.get_or_404(ActivityLog, log_id)
+    return render_template("admin/activity_log_detail.html", log=log)
 
 
 # ---------- Products ----------

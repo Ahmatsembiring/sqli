@@ -125,6 +125,39 @@ input[type="email"], input[type="number"], textarea, select {
 
 .link-list { margin: 0; padding-left: 18px; line-height: 1.8; }
 
+.filter-bar input[type="date"] {
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.container:has(.table-logs) { max-width: 1280px; }
+.table-logs { font-size: 13px; }
+.nowrap { white-space: nowrap; }
+code { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: 12px; }
+code.truncate {
+  display: block;
+  max-width: 420px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.code-block {
+  background: #f3f4f6;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px;
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 13px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.tag { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 12px; }
+.tag-success { background: #e7f6ec; color: #1a7f37; }
+.tag-error { background: var(--danger-bg); color: var(--danger); }
+
 .alert { padding: 10px 14px; border-radius: 6px; margin-bottom: 16px; }
 .alert-danger { background: var(--danger-bg); color: var(--danger); }
 .alert-info { background: var(--info-bg); }
