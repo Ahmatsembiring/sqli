@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}User Dashboard · SQLi Research Lab{% endblock %}
+{% block content %}
+<h1>User Dashboard</h1>
+<section class="card">
+  <p>Selamat datang, <strong>{{ current_user.username }}</strong>.</p>
+  <p class="muted">Email: {{ current_user.email }}</p>
+</section>
+
+<div class="grid">
+  <section class="card">
+    <h2>Normal Activity</h2>
+    <p class="muted">Placeholder — fitur aktivitas normal belum tersedia.</p>
+  </section>
+  <section class="card">
+    <h2>SQL Injection Lab</h2>
+    <p class="muted">Placeholder — SQL Injection Lab belum tersedia pada fase ini.</p>
+  </section>
+</div>
+{% endblock %}

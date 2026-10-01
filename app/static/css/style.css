@@ -1,0 +1,81 @@
+:root {
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --text: #1f2933;
+  --muted: #6b7280;
+  --border: #e2e5ea;
+  --primary: #2563eb;
+  --danger-bg: #fdecec;
+  --danger: #b42318;
+  --info-bg: #e8f1fd;
+  --warning-bg: #fff6e0;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.brand { font-weight: 600; }
+.env-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--warning-bg);
+  color: #8a5a00;
+}
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.topbar-right form { margin: 0; }
+.role { color: var(--muted); }
+
+.container { max-width: 960px; margin: 32px auto; padding: 0 16px; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+}
+.card-narrow { max-width: 380px; margin: 48px auto; }
+.card h2 { margin-top: 0; font-size: 18px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.muted { color: var(--muted); }
+
+label { display: block; margin: 12px 0 4px; font-size: 14px; }
+input[type="text"], input[type="password"] {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.btn {
+  margin-top: 16px;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--primary);
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+}
+.btn-secondary { margin-top: 0; background: #e5e7eb; color: var(--text); }
+
+.alert { padding: 10px 14px; border-radius: 6px; margin-bottom: 16px; }
+.alert-danger { background: var(--danger-bg); color: var(--danger); }
+.alert-info { background: var(--info-bg); }
+.alert-warning { background: var(--warning-bg); }

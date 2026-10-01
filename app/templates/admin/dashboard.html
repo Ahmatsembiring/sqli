@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard · SQLi Research Lab{% endblock %}
+{% block content %}
+<h1>Admin Dashboard</h1>
+<section class="card">
+  <p>Selamat datang, <strong>{{ current_user.username }}</strong>.</p>
+  <p class="muted">Statistik, manajemen user, dan activity log akan ditambahkan pada fase berikutnya.</p>
+</section>
+{% endblock %}
