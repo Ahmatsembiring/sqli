@@ -4,6 +4,16 @@
 <h1>Admin Dashboard</h1>
 <section class="card">
   <p>Selamat datang, <strong>{{ current_user.username }}</strong>.</p>
-  <p class="muted">Statistik, manajemen user, dan activity log akan ditambahkan pada fase berikutnya.</p>
+  <p class="muted">Statistik dan activity log akan ditambahkan pada fase berikutnya.</p>
 </section>
+
+<div class="grid">
+  <section class="card">
+    <h2>Data aplikasi</h2>
+    <ul class="link-list">
+      <li><a href="{{ url_for('admin.users') }}">Daftar &amp; cari user</a></li>
+      <li><a href="{{ url_for('admin.products') }}">Kelola produk</a></li>
+    </ul>
+  </section>
+</div>
 {% endblock %}

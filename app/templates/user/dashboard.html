@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_macros.html" import rupiah %}
 {% block title %}User Dashboard · SQLi Research Lab{% endblock %}
 {% block content %}
 <h1>User Dashboard</h1>
@@ -10,11 +11,33 @@
 <div class="grid">
   <section class="card">
     <h2>Normal Activity</h2>
-    <p class="muted">Placeholder — fitur aktivitas normal belum tersedia.</p>
+    <ul class="link-list">
+      <li><a href="{{ url_for('user.products') }}">Cari &amp; lihat produk</a></li>
+      <li><a href="{{ url_for('user.transactions') }}">Riwayat transaksi</a></li>
+      <li><a href="{{ url_for('user.users') }}">Cari user</a></li>
+      <li><a href="{{ url_for('user.profile') }}">Profil saya</a></li>
+    </ul>
   </section>
   <section class="card">
     <h2>SQL Injection Lab</h2>
     <p class="muted">Placeholder — SQL Injection Lab belum tersedia pada fase ini.</p>
   </section>
 </div>
+
+<section class="card">
+  <h2>Transaksi terakhir</h2>
+  {% if recent_transactions %}
+    <table class="table">
+      <thead><tr><th>#</th><th>Produk</th><th>Qty</th><th>Total</th><th>Waktu</th></tr></thead>
+      <tbody>
+        {% for t in recent_transactions %}
+          <tr><td>{{ t.id }}</td><td>{{ t.product.name }}</td><td>{{ t.quantity }}</td>
+              <td>{{ rupiah(t.total) }}</td><td>{{ t.created_at.strftime('%Y-%m-%d %H:%M') }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="muted">Belum ada transaksi.</p>
+  {% endif %}
+</section>
 {% endblock %}

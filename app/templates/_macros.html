@@ -1,0 +1,41 @@
+{% macro pagination_nav(pagination, endpoint) %}
+  {% if pagination.pages > 1 %}
+    {% set args = request.args.to_dict() %}
+    {% set _ = args.pop('page', None) %}
+    <nav class="pagination">
+      {% if pagination.has_prev %}
+        <a href="{{ url_for(endpoint, page=pagination.prev_num, **args) }}">&laquo; Sebelumnya</a>
+      {% endif %}
+      <span>Halaman {{ pagination.page }} / {{ pagination.pages }}</span>
+      {% if pagination.has_next %}
+        <a href="{{ url_for(endpoint, page=pagination.next_num, **args) }}">Berikutnya &raquo;</a>
+      {% endif %}
+    </nav>
+  {% endif %}
+{% endmacro %}
+
+{% macro product_filter_form(endpoint, filters, categories) %}
+  <form method="get" action="{{ url_for(endpoint) }}" class="filter-bar">
+    <input type="text" name="q" value="{{ filters.q }}" placeholder="Cari nama/deskripsi">
+    <select name="category">
+      <option value="">Semua kategori</option>
+      {% for c in categories %}
+        <option value="{{ c }}" {% if c == filters.category %}selected{% endif %}>{{ c }}</option>
+      {% endfor %}
+    </select>
+    <input type="number" name="min_price" min="0" step="1000" placeholder="Harga min"
+           value="{{ filters.min_price if filters.min_price is not none else '' }}">
+    <input type="number" name="max_price" min="0" step="1000" placeholder="Harga maks"
+           value="{{ filters.max_price if filters.max_price is not none else '' }}">
+    <select name="sort">
+      {% for key, label in [('newest', 'Terbaru'), ('name', 'Nama'), ('price_asc', 'Harga ↑'), ('price_desc', 'Harga ↓')] %}
+        <option value="{{ key }}" {% if key == filters.sort %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <label class="inline"><input type="checkbox" name="in_stock" value="1" {% if filters.in_stock %}checked{% endif %}> Ada stok</label>
+    <button type="submit" class="btn btn-inline">Filter</button>
+    <a href="{{ url_for(endpoint) }}" class="muted">Reset</a>
+  </form>
+{% endmacro %}
+
+{% macro rupiah(value) %}Rp {{ "{:,.0f}".format(value).replace(",", ".") }}{% endmacro %}

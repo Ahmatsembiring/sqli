@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Profil · SQLi Research Lab{% endblock %}
+{% block content %}
+<h1>Profil Saya</h1>
+
+<section class="card">
+  <dl class="kv">
+    <dt>Username</dt><dd>{{ current_user.username }}</dd>
+    <dt>Role</dt><dd>{{ current_user.role.value }}</dd>
+    <dt>Terdaftar</dt><dd>{{ current_user.created_at.strftime('%Y-%m-%d %H:%M') }}</dd>
+  </dl>
+</section>
+
+<div class="grid">
+  <section class="card">
+    <h2>Ubah email</h2>
+    <form method="post" action="{{ url_for('user.profile') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" value="{{ current_user.email }}" required maxlength="120">
+      <button type="submit" class="btn">Simpan</button>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>Ganti password</h2>
+    <form method="post" action="{{ url_for('user.change_password') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label for="current_password">Password saat ini</label>
+      <input id="current_password" name="current_password" type="password" required autocomplete="current-password">
+      <label for="new_password">Password baru</label>
+      <input id="new_password" name="new_password" type="password" required minlength="8" autocomplete="new-password">
+      <label for="confirm_password">Ulangi password baru</label>
+      <input id="confirm_password" name="confirm_password" type="password" required minlength="8" autocomplete="new-password">
+      <button type="submit" class="btn">Ganti password</button>
+    </form>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}{{ user.username }} · SQLi Research Lab{% endblock %}
+{% block content %}
+<h1>{{ user.username }}</h1>
+<section class="card">
+  {# Email & data transaksi user lain sengaja tidak ditampilkan. #}
+  <dl class="kv">
+    <dt>Username</dt><dd>{{ user.username }}</dd>
+    <dt>Role</dt><dd>{{ user.role.value }}</dd>
+    <dt>Terdaftar</dt><dd>{{ user.created_at.strftime('%Y-%m-%d') }}</dd>
+  </dl>
+</section>
+<a href="{{ url_for('user.users') }}">&laquo; Kembali ke daftar user</a>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% from "_macros.html" import pagination_nav, product_filter_form, rupiah %}
+{% block title %}Produk · Admin · SQLi Research Lab{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Produk</h1>
+  <a href="{{ url_for('admin.product_create') }}" class="btn btn-inline">+ Tambah produk</a>
+</div>
+
+{{ product_filter_form('admin.products', filters, categories) }}
+
+<section class="card">
+  <p class="muted">{{ pagination.total }} produk ditemukan.</p>
+  <table class="table">
+    <thead><tr><th>ID</th><th>Nama</th><th>Kategori</th><th class="num">Harga</th><th class="num">Stok</th><th></th></tr></thead>
+    <tbody>
+      {% for p in pagination.items %}
+        <tr>
+          <td>{{ p.id }}</td><td>{{ p.name }}</td><td>{{ p.category }}</td>
+          <td class="num">{{ rupiah(p.price) }}</td><td class="num">{{ p.stock }}</td>
+          <td class="actions">
+            <a href="{{ url_for('admin.product_edit', product_id=p.id) }}">Edit</a>
+            <form method="post" action="{{ url_for('admin.product_delete', product_id=p.id) }}"
+                  data-confirm="Hapus produk '{{ p.name }}'?">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-secondary btn-small">Hapus</button>
+            </form>
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="6" class="muted">Tidak ada produk yang cocok.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {{ pagination_nav(pagination, 'admin.products') }}
+</section>
+{% endblock %}

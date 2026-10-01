@@ -11,6 +11,19 @@
     <span class="brand">SQLi Research Lab</span>
     <span class="env-badge">LOCAL LAB ONLY</span>
     {% if current_user.is_authenticated %}
+      <nav class="mainnav">
+        {% if current_user.is_admin %}
+          <a href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+          <a href="{{ url_for('admin.users') }}">Users</a>
+          <a href="{{ url_for('admin.products') }}">Products</a>
+        {% else %}
+          <a href="{{ url_for('user.dashboard') }}">Dashboard</a>
+          <a href="{{ url_for('user.products') }}">Products</a>
+          <a href="{{ url_for('user.transactions') }}">Transaksi</a>
+          <a href="{{ url_for('user.users') }}">Users</a>
+          <a href="{{ url_for('user.profile') }}">Profil</a>
+        {% endif %}
+      </nav>
       <nav class="topbar-right">
         <span>{{ current_user.username }} <small class="role">{{ current_user.role.value }}</small></span>
         <form method="post" action="{{ url_for('auth.logout') }}">

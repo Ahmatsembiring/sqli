@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% from "_macros.html" import rupiah %}
+{% block title %}{{ product.name }} · SQLi Research Lab{% endblock %}
+{% block content %}
+<h1>{{ product.name }}</h1>
+<section class="card">
+  <dl class="kv">
+    <dt>Kategori</dt><dd>{{ product.category }}</dd>
+    <dt>Harga</dt><dd>{{ rupiah(product.price) }}</dd>
+    <dt>Stok</dt><dd>{{ product.stock }}</dd>
+  </dl>
+  <p>{{ product.description or '' }}</p>
+</section>
+
+<section class="card">
+  <h2>Beli</h2>
+  {% if product.stock > 0 %}
+    <form method="post" action="{{ url_for('user.buy', product_id=product.id) }}" class="filter-bar">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label for="quantity" class="inline">Jumlah</label>
+      <input id="quantity" name="quantity" type="number" min="1" max="{{ [product.stock, max_qty]|min }}" value="1" required>
+      <button type="submit" class="btn btn-inline">Beli</button>
+    </form>
+  {% else %}
+    <p class="muted">Stok habis.</p>
+  {% endif %}
+</section>
+<a href="{{ url_for('user.products') }}">&laquo; Kembali ke daftar produk</a>
+{% endblock %}

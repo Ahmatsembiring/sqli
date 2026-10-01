@@ -26,6 +26,8 @@ class User(UserMixin, db.Model):
     )
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.now)
 
+    transactions = db.relationship("Transaction", back_populates="user", lazy="dynamic")
+
     def set_password(self, password):
         # werkzeug default: scrypt dengan salt acak
         self.password_hash = generate_password_hash(password)
